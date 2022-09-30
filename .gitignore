@@ -1,5 +1,9 @@
 .venv/
-__pycache
+__pycache__
+*.pyc
+
+#DB
+db.sqlite3
 
 #IDE
 .idea
