@@ -6,6 +6,10 @@ class OID(models.Model):
     name = models.CharField(max_length=255)
     identifier = models.CharField(max_length=255)
 
+    def __str__(self):
+        # Return a string that represents the instance
+        return f"{self.name}"
+
 
 class Device(models.Model):
     name = models.CharField(max_length=255)
@@ -15,7 +19,15 @@ class Device(models.Model):
     )
     community = models.CharField(max_length=255)
 
+    def __str__(self):
+        # Return a string that represents the instance
+        return f"{self.name}"
+
 
 class Service(models.Model):
-    oid = models.ForeignKey(OID, on_delete=models.CASCADE())
-    device = models.ForeignKey(Device, on_delete=models.CASCADE())
+    oid = models.ForeignKey(OID, on_delete=models.CASCADE)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+
+    def __str__(self):
+        # Return a string that represents the instance
+        return f"{self.device.name} - {self.oid.name}"
