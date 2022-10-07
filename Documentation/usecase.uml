@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+actor "Administrateur Système" as fc
+rectangle Soup  {
+  usecase "Ajouter/Supprimer des equipements" as UC1
+  usecase "Voir l'historique des logs par machines" as UC2
+  usecase "Alerter sur l'état anormaux des equipements" as UC3
+  usecase "Afficher les statistiques des divers equipements" as UC4
+  usecase "Définir un nom d'équipement" as UC1_1
+  usecase "Définir des OID" as UC1_2
+  usecase "Définir son IP" as UC1_3
+  usecase "Définir un nom pour l'OID" as UC1_2_1
+
+}
+UC1 --> UC1_1
+UC1 --> UC1_2
+UC1 --> UC1_3
+UC1_2 --> UC1_2_1
+fc --> UC1
+fc --> UC2
+fc --> UC3
+fc --> UC4
+@enduml

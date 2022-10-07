@@ -1,0 +1,36 @@
+@startuml
+object App {
+  Interface Web
+  Configuration
+  Affichage des graphiques
+  Affichage des logs
+}
+
+object BDD {
+- users
+- last_logins
+- parametres equipements :
+- nom
+- oid
+- ip
+- date
+
+}
+
+object SNMP {
+  Connexion aux equipements
+
+}
+
+object API {
+  Service liste equipements
+  Service d'envoi des donnes vers la bdd & définition du tag
+}
+
+App --> BDD : Stock les data
+SNMP --> Equipement1 : Interroge l'equipement
+SNMP --> EquipementX
+SNMP --> API : Recupere les equipements
+App --> API : Propose le service
+SNMP --> API : Envoi les données
+@enduml
