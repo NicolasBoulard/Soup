@@ -1,7 +1,6 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from soupui.models import OID, Device, Service
+from soupui.models import Service
 
 
 class ServiceSerializer(serializers.Serializer):
