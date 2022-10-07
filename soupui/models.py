@@ -15,7 +15,7 @@ class Device(models.Model):
     name = models.CharField(max_length=255)
     ip = models.CharField(max_length=255)
     port = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(65535)]
+        validators=[MinValueValidator(1), MaxValueValidator(65535)], default=161
     )
     community = models.CharField(max_length=255)
 
