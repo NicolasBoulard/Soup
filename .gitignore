@@ -1,6 +1,7 @@
 .venv/
 __pycache__
 *.pyc
+.envrc
 
 #DB
 db.sqlite3
