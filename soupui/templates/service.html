@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block style_import %}
+{% endblock %}
+{% block content %}
+    <div class="d-flex flex-nowrap">
+        <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+          <span class="bi d-block mx-auto text-center mb-1">
+                <i class="fa-regular fa-server fa-2xl"></i>
+              <span class="fs-4">Serveurs</span>
+          </span>
+
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="{% url 'device' %}" class="nav-link {% if request.resolver_match.url_name == "device" %}active{% else %}link-dark{% endif %}" aria-current="page">
+              <i class="fa-solid fa-list"></i>
+              Liste des équipements
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'oid' %}" class="nav-link {% if request.resolver_match.url_name == "oid" %}active{% else %}link-dark{% endif %}">
+              <i class="fa-solid fa-database"></i>
+              Liste des OID
+            </a>
+          </li>
+
+        </ul>
+        <hr>
+      </div>
+        {% block list %}
+        {% endblock %}
+    </div>
+{% endblock %}
+{% block script_import %}
+{% endblock %}

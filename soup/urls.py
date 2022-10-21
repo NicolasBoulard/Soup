@@ -22,8 +22,8 @@ from django.urls import re_path
 from django.contrib.staticfiles import views
 
 urlpatterns = [
-    path('', include('soupui.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/', include('soupapi.urls')),
-    path('admin/', admin.site.urls),
+    path("", include("soupui.urls")),
+    path("api-auth/", include("rest_framework.urls")),
+    path("api/", include("soupapi.urls")),
+    path("admin/", admin.site.urls),
 ] + static(settings.STATIC_URL)

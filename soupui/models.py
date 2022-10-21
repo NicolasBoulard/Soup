@@ -31,3 +31,9 @@ class Service(models.Model):
     def __str__(self):
         # Return a string that represents the instance
         return f"{self.device.name} - {self.oid.name}"
+
+
+class Transaction(models.Model):
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    value = models.CharField(max_length=255)

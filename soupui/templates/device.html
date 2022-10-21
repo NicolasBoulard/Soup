@@ -1,0 +1,151 @@
+{% extends "service.html" %}
+{% block list %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+        <div class="my-4 d-flex justify-content-between">
+            <h2 class="">Liste des équipements</h2>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Action
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#additem"><i class="fa-solid fa-plus"></i> Ajouter</a></li>
+                <li><a class="dropdown-item" href="#" onclick="editDevice()"><i class="fa-solid fa-pen"></i> Modifier</a></li>
+                <li><a class="dropdown-item" href="#" onclick="showCheckbox()"><i class="fa-solid fa-trash"></i> Supprimer</a></li>
+              </ul>
+            </div>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nom</th>
+              <th scope="col">IP</th>
+              <th scope="col">PORT</th>
+              <th scope="col">Communauté</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <form method="post" action="{% url 'device_remove' %}">
+            {% csrf_token %}
+                {% for device in devices %}
+                <tr>
+                  <th scope="row">
+                      <span class="deviceid">{{ device.id }}</span>
+                      <input class="d-none form-check-input checkboxdelete" type="checkbox" value="true" name="{{ device.id }}" id="checkbox_remove">
+                  </th>
+                  <td>{{ device.name }}</td>
+                  <td>{{ device.ip }}</td>
+                  <td>{{ device.port }}</td>
+                  <td>{{ device.community }}</td>
+                  <td><span type="text" data-bs-toggle="modal" data-bs-target="#edit-item-{{ device.id }}" class="btn-edit d-none btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><i class="fa-solid fa-pen"></i> Modifier</span></td>
+                </tr>
+                {% endfor %}
+                <button type="submit" class="btn-delete d-none btn btn-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+            </form>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+<!-- Add Modal -->
+<div class="modal fade" id="additem" tabindex="-1" aria-labelledby="additem" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter un équipement</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'device_add' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-i"></i></span>
+              <input name="name" type="text" class="form-control" placeholder="Nom" aria-label="Nom" aria-describedby="add-name" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-ip"><i class="fa-solid fa-ethernet"></i></span>
+              <input name="ip" type="text" class="form-control" placeholder="Adresse IP" aria-label="Adresse IP" aria-describedby="add-ip" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-port"><i class="fa-solid fa-ethernet"></i></span>
+              <input name="port" type="number" class="form-control" value="161" placeholder="Port" aria-label="Port" aria-describedby="add-port" required>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="add-community"><i class="fa-solid fa-lock"></i></span>
+                <input name="community" type="text" class="form-control" placeholder="Communauté" aria-label="Communauté" aria-describedby="add-community" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Ajouter</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% for device in devices %}
+<div class="modal fade" id="edit-item-{{ device.id }}" tabindex="-1" aria-labelledby="edit-item-{{ device.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier l'équipement #{{ device.id }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'device_edit' device_id=device.id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-i"></i></span>
+              <input value="{{ device.name }}" name="name" type="text" class="form-control" placeholder="Nom" aria-label="Nom" aria-describedby="add-name" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-ip"><i class="fa-solid fa-ethernet"></i></span>
+              <input value="{{ device.ip }}" name="ip" type="text" class="form-control" placeholder="Adresse IP" aria-label="Adresse IP" aria-describedby="add-ip" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-port"><i class="fa-solid fa-ethernet"></i></span>
+              <input value="{{ device.port }}" name="port" type="number" class="form-control" placeholder="Port" aria-label="Port" aria-describedby="add-port" required>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="add-community"><i class="fa-solid fa-lock"></i></span>
+                <input value="{{ device.community }}" name="community" type="text" class="form-control" placeholder="Communauté" aria-label="Communauté" aria-describedby="add-community" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+function showCheckbox() {
+    console.log('ah')
+    deviceid = document.getElementsByClassName('deviceid')
+    for (let device of deviceid) {
+        device.classList.add('d-none')
+    }
+    checkboxs = document.getElementsByClassName('checkboxdelete')
+    for (let checkbox of checkboxs) {
+        console.log(checkbox)
+        checkbox.classList.remove('d-none')
+    }
+    btndelete = document.getElementsByClassName('btn-delete')[0]
+    btndelete.classList.remove('d-none')
+}
+
+function editDevice() {
+    btnedit = document.getElementsByClassName('btn-edit')
+    for (let btn of btnedit) {
+        btn.classList.remove('d-none')
+    }
+}
+</script>
+{% endblock %}

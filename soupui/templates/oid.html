@@ -1,0 +1,43 @@
+{% extends "service.html" %}
+{% block list %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+        <div class="my-4 d-flex justify-content-between">
+            <h2 class="">Liste des OID</h2>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Action
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-plus"></i> Ajouter</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen"></i> Modifier</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-trash"></i> Supprimer</a></li>
+              </ul>
+            </div>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nom</th>
+              <th scope="col">OID</th>
+              <th scope="col">OID(Traduction en language)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for oid in oids %}
+            <tr>
+              <th scope="row">{{ oid.id }}</th>
+              <td>{{ oid.name }}</td>
+              <td>{{ oid.identifier }}</td>
+              <td>traduction de l'oid</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
