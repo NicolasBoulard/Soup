@@ -1,5 +1,6 @@
-{% extends "service.html" %}
+{% extends "services.html" %}
 {% block list %}
+
 
 <div class="container">
   <div class="row">
@@ -11,9 +12,9 @@
                 <i class="fa-solid fa-screwdriver-wrench"></i> Action
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-plus"></i> Ajouter</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen"></i> Modifier</a></li>
-                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-trash"></i> Supprimer</a></li>
+                <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#additem"><i class="fa-solid fa-plus"></i> Ajouter</a></li>
+                <li><a class="dropdown-item" href="#" onclick="editOid()"><i class="fa-solid fa-pen"></i> Modifier</a></li>
+                <li><a class="dropdown-item" href="#" onclick="showCheckbox()"><i class="fa-solid fa-trash"></i> Supprimer</a></li>
               </ul>
             </div>
         </div>
@@ -26,18 +27,112 @@
               <th scope="col">OID(Traduction en language)</th>
             </tr>
           </thead>
+
           <tbody>
-            {% for oid in oids %}
-            <tr>
-              <th scope="row">{{ oid.id }}</th>
-              <td>{{ oid.name }}</td>
-              <td>{{ oid.identifier }}</td>
-              <td>traduction de l'oid</td>
-            </tr>
-            {% endfor %}
+            <form method="post" action="{% url 'oid_remove' %}">
+            {% csrf_token %}
+                {% for oid in oids %}
+                <tr>
+                  <th scope="row">
+                      <span class="oidid">{{ oid.id }}</span>
+                      <input class="d-none form-check-input checkboxdelete" type="checkbox" value="true" name="{{ oid.id }}" id="checkbox_remove">
+                  </th>
+                  <td>{{ oid.name }}</td>
+                  <td>{{ oid.identifier }}</td>
+                  <td>traduction de l'oid</td>
+                  <td><span type="text" data-bs-toggle="modal" data-bs-target="#edit-item-{{ oid.id }}" class="btn-edit d-none btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><i class="fa-solid fa-pen"></i> Modifier</span></td>
+                </tr>
+                {% endfor %}
+                <button type="submit" class="btn-delete d-none btn btn-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+            </form>
           </tbody>
         </table>
     </div>
   </div>
 </div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="additem" tabindex="-1" aria-labelledby="additem" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter un OID</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'oid_add' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-i"></i></span>
+              <input name="name" type="text" class="form-control" placeholder="Nom" aria-label="Nom" aria-describedby="add-name" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-identifier"><i class="fa-solid fa-ethernet"></i></span>
+              <input name="identifier" type="text" class="form-control" placeholder="Identifier (1.2.3.4.5.6)" aria-label="Identifier (1.2.3.4.5.6)" aria-describedby="add-identifier" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Ajouter</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% for oid in oids %}
+<div class="modal fade" id="edit-item-{{ oid.id }}" tabindex="-1" aria-labelledby="edit-item-{{ oid.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier l'OID #{{ oid.id }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'oid_edit' oid_id=oid.id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-i"></i></span>
+              <input value="{{ oid.name }}" name="name" type="text" class="form-control" placeholder="Nom" aria-label="Nom" aria-describedby="add-name" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-identifier"><i class="fa-solid fa-book"></i></span>
+              <input value="{{ oid.identifier }}" name="identifier" type="text" class="form-control" placeholder="Identifier (1.2.3.4.5.6)" aria-label="Adresse IP" aria-describedby="add-identifier" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-port"><i class="fa-solid fa-language"></i></span>
+              <input value="" name="identifiertrad" type="text" class="form-control" placeholder="Identifier trad" aria-label="Port" aria-describedby="add-port" disabled>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+function showCheckbox() {
+    console.log('ah')
+    oidid = document.getElementsByClassName('oidid')
+    for (let oid of oidid) {
+        oid.classList.add('d-none')
+    }
+    checkboxs = document.getElementsByClassName('checkboxdelete')
+    for (let checkbox of checkboxs) {
+        console.log(checkbox)
+        checkbox.classList.remove('d-none')
+    }
+    btndelete = document.getElementsByClassName('btn-delete')[0]
+    btndelete.classList.remove('d-none')
+}
+
+function editOid() {
+    btnedit = document.getElementsByClassName('btn-edit')
+    for (let btn of btnedit) {
+        btn.classList.remove('d-none')
+    }
+}
+</script>
 {% endblock %}

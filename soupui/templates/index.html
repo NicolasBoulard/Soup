@@ -3,6 +3,12 @@
 {% endblock %}
 {% block content %}
 <div class="mt-5 container ">
+    <div class="jumbotron">
+      <h1 class="display-4">Bienvenue, {{ request.user.username }} !</h1>
+      <p class="lead">Cette application a pour objectif de surveiller votre infrastructure. Nous récupérons des métriques via le protocole SNMP puis nous analysons. Ces métriques sont ensuite affichées sur des graphiques dans l'onglet dashboard.</p>
+      <hr class="my-4">
+
+    </div>
   <div class="row">
     <div class="col">
       <div class="card">

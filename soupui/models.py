@@ -25,12 +25,13 @@ class Device(models.Model):
 
 
 class Service(models.Model):
+    name = models.CharField(max_length=255, default="")
     oid = models.ForeignKey(OID, on_delete=models.CASCADE)
     device = models.ForeignKey(Device, on_delete=models.CASCADE)
 
     def __str__(self):
         # Return a string that represents the instance
-        return f"{self.device.name} - {self.oid.name}"
+        return f"{self.name}"
 
 
 class Transaction(models.Model):

@@ -1,9 +1,108 @@
 {% extends "layout.html" %}
 {% block style_import %}
+<style>
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+  }
+
+.nav-scroller .nav {
+display: flex;
+flex-wrap: nowrap;
+padding-bottom: 1rem;
+margin-top: -1px;
+overflow-x: auto;
+text-align: center;
+white-space: nowrap;
+-webkit-overflow-scrolling: touch;
+}
+.nav-scroller .nav {
+  color: rgba(255, 255, 255, .75);
+}
+
+.nav-scroller .nav-link {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: .875rem;
+  color: #6c757d;
+}
+
+.nav-scroller .nav-link:hover {
+  color: #007bff;
+}
+
+.nav-scroller .active {
+  font-weight: 500;
+  color: #343a40;
+}
+</style>
 {% endblock %}
 {% block content %}
-    dashboard ici
+<div class="nav-scroller bg-body shadow-sm">
+  <nav class="nav" aria-label="Secondary navigation">
+  {% for device in devices %}
+      <a class="nav-link {% if device_id == device.id %}active{% endif %}" aria-current="page" href="{% url 'dashboard_device' device.id %}">{{ device.name }} </a>
+  {% endfor %}
+    <!--<a class="nav-link" href="#">
+      Friends
+      <span class="badge text-bg-light rounded-pill align-text-bottom">27</span>
+    </a>
+    <a class="nav-link" href="#">Explore</a>-->
+  </nav>
+</div>
+<div>
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            {% for service in services %}
+            <div class="col-6">
+                {% if not service.transaction_set.all %}
+                <div style="min-height: 55vh" class="text-bg-light h-100 d-flex align-items-center justify-content-center">
+
+                    <p class=""><i class="fa-solid fa-triangle-exclamation"></i> Ce graph n'a pas encore de métrique</p>
+
+                </div>
+                {% else %}
+                <div id="chart-{{ service.id }}">
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}
 {% block script_import %}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        {% for service in services %}
+
+        var options{{ service.id }} = {
+          chart: {
+            type: 'line'
+          },
+          series: [{
+            name: '{{ service.name }}',
+            data: [
+                {% for transaction in service.transaction_set.all %}
+                {
+                  x: "{{ transaction.date|date:"c" }}",
+                  y: {{ transaction.value }}
+                },
+                {% endfor %}]
+          }],
+          xaxis: {
+              type: "datetime"
+
+          }
+        }
+
+        var chart{{ service.id }} = new ApexCharts(document.querySelector("#chart-{{ service.id }}"), options{{ service.id }});
+
+        chart{{ service.id }}.render();
+        {% endfor %}
+    </script>
 {% endblock %}
