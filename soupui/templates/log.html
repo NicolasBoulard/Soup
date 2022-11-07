@@ -71,14 +71,14 @@
           {% if request.resolver_match.url_name == "log"%}
           <li>
             <a href="{% url 'log_all' %}" class="nav-link {% if request.resolver_match.url_name == "log_all" %}active{% else %}link-dark{% endif %}" aria-current="page">
-              <i class="fa-solid fa-sort-up"></i>
+              <i class="fa-solid fa-eye"></i>
               Voir tous les logs
             </a>
           </li>
           {% else %}
           <li>
             <a href="{% url 'log' %}" class="nav-link {% if request.resolver_match.url_name == "log" %}active{% else %}link-dark{% endif %}" aria-current="page">
-              <i class="fa-solid fa-sort-up"></i>
+              <i class="fa-solid fa-eye-slash"></i>
               Cacher certains logs
             </a>
           </li>
@@ -103,7 +103,7 @@
 <script>
 function openLog(id){
     console.log(id)
-    window.open('/log/'+id,'','toolbar=no,menubar=no,status=no,location=no')
+    window.open('/log/'+id,'','toolbar=no,menubar=no,status=no,location=no,height=680,width=640')
 }
 </script>
 {% endblock %}
