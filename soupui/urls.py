@@ -24,6 +24,7 @@ urlpatterns = [
     path("dashboard/<int:device_id>/", views.dashboard_device, name="dashboard_device"),
     path("log", views.log, {'view_all': False}, name="log"),
     path("log/all", views.log, {'view_all': True}, name="log_all"),
+    path("log/<int:log_id>/", views.log_detail, name="log_detail"),
     path("service/device", views.device, name="device"),
     path("service/device/add", views.device_add, name="device_add"),
     path("service/device/edit/<int:device_id>/", views.device_edit, name="device_edit"),

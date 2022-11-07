@@ -217,8 +217,6 @@ def log(request, view_all):
     if request.user.is_authenticated:
         transaction_signature_list = []
         transaction_list = []
-        transactions = Transaction.objects.all()
-
         for transaction in Transaction.objects.all():
             for threshold in transaction.service.threshold.all():
                 criticality = threshold.get_criticality_code(transaction)
@@ -230,6 +228,7 @@ def log(request, view_all):
                     if transaction_signature not in transaction_signature_list:
                         transaction_signature_list.append(transaction_signature)
                         transaction_list.append({
+                            'id': transaction.id,
                             'level': criticality.code,
                             'service': transaction.service.oid.name,
                             'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
@@ -243,20 +242,26 @@ def log(request, view_all):
                         if transaction_signature not in transaction_signature_list:
                             transaction_signature_list.append(transaction_signature)
                             transaction_list.append({
+                                'id': transaction.id,
                                 'level': criticality.code,
                                 'service': transaction.service.oid.name,
                                 'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
                                 'value': transaction.value,
                                 'date': transaction.date.strftime("%m/%d/%Y, %H:%M:%S")
                             })
-
-
-
-            # TODO if want to print all transactions
-            #print(f"INFO - {transaction.value}")
-        print(transaction_list)
-        print(transaction_signature_list)
         context["transactions"] = transaction_list
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect("/login")
+
+def log_detail(request, log_id):
+    template = loader.get_template("log_detail.html")
+    context = {"title": "Log"}
+    if request.user.is_authenticated:
+        if not log_id:
+            return redirect("/log")
+
+        context["transactions"] = "test"
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")

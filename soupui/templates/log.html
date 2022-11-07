@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 {% block style_import %}
+<style>
+.newWindow {
+    cursor: pointer;
+}
+</style>
 {% endblock %}
 {% block content %}
 <div class="d-flex flex-nowrap">
@@ -19,16 +24,13 @@
 
           <tbody>
             {% for transaction in transactions %}
-
-                <tr class="{% if transaction.level == 'DEBUG' %}table-primary{% elif transaction.level == 'INFO' %}table-default{% elif transaction.level == 'NOTICE' %}table-info{% elif transaction.level == 'WARN' %}table-warning{% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}table-danger{% endif %}" onclick="openLog('ah')">
+                <tr class="newWindow {% if transaction.level == 'DEBUG' %}table-primary{% elif transaction.level == 'INFO' %}table-default{% elif transaction.level == 'NOTICE' %}table-info{% elif transaction.level == 'WARN' %}table-warning{% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}table-danger{% endif %}" onclick="openLog('{{ transaction.id }}')">
                   <th scope="row">
-                      <span class="text-danger">
                       {% if transaction.level == 'DEBUG' %}<span class="text-primary"><i class="fa-solid fa-angles-right"></i> {{ transaction.level }}</span>
-                      {% elif transaction.level == 'INFO' %}<span class="text-dark"><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
+                      {% elif transaction.level == 'INFO' %}<span><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
                       {% elif transaction.level == 'NOTICE' %}<span class="text-info"><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
                       {% elif transaction.level == 'WARN' %}<span class="text-warning"><i class="fa-solid fa-triangle-exclamation fa-fade"></i> {{ transaction.level }}</span>
                       {% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}<span class="text-danger"><i class="fa-solid fa-circle-xmark fa-fade"></i> {{ transaction.level }}</span>{% endif %}
-
                   </th>
                   <td>{{ transaction.service }}</td>
                   <td>{{ transaction.server}}</td>
@@ -58,6 +60,12 @@
             <a href="{% url 'device' %}" class="nav-link {% if request.resolver_match.url_name == "device" %}active{% else %}link-dark{% endif %}" aria-current="page">
               <i class="fa-solid fa-sort-up"></i>
               Trier par
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'device' %}" class="nav-link {% if request.resolver_match.url_name == "device" %}active{% else %}link-dark{% endif %}" aria-current="page">
+              <i class="fa-solid fa-check"></i>
+              Marquer comme lu tous les logs
             </a>
           </li>
           {% if request.resolver_match.url_name == "log"%}
@@ -94,8 +102,8 @@
 </div>
 <script>
 function openLog(id){
-    location.replace("#")
-    window.open('http://google.fr/','','toolbar=no,menubar=no,status=no,location=no')
+    console.log(id)
+    window.open('/log/'+id,'','toolbar=no,menubar=no,status=no,location=no')
 }
 </script>
 {% endblock %}
