@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block style_import %}
+{% endblock %}
+{% block content %}
+<div class="d-flex flex-nowrap">
+    <div class="container">
+      <div class="row">
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Niveau</th>
+              <th scope="col">Service(OID Name)</th>
+              <th scope="col">Serveur</th>
+              <th scope="col">Valeur</th>
+              <th scope="col">Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for transaction in transactions %}
+
+                <tr class="{% if transaction.level == 'DEBUG' %}table-primary{% elif transaction.level == 'INFO' %}table-default{% elif transaction.level == 'NOTICE' %}table-info{% elif transaction.level == 'WARN' %}table-warning{% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}table-danger{% endif %}" onclick="openLog('ah')">
+                  <th scope="row">
+                      <span class="text-danger">
+                      {% if transaction.level == 'DEBUG' %}<span class="text-primary"><i class="fa-solid fa-angles-right"></i> {{ transaction.level }}</span>
+                      {% elif transaction.level == 'INFO' %}<span class="text-dark"><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
+                      {% elif transaction.level == 'NOTICE' %}<span class="text-info"><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
+                      {% elif transaction.level == 'WARN' %}<span class="text-warning"><i class="fa-solid fa-triangle-exclamation fa-fade"></i> {{ transaction.level }}</span>
+                      {% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}<span class="text-danger"><i class="fa-solid fa-circle-xmark fa-fade"></i> {{ transaction.level }}</span>{% endif %}
+
+                  </th>
+                  <td>{{ transaction.service }}</td>
+                  <td>{{ transaction.server}}</td>
+                  <td>{{ transaction.value }}</td>
+                  <td>{{ transaction.date }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+
+
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+          <span class="bi d-block mx-auto text-center mb-1">
+                <i class="fa-regular fa-screwdriver-wrench fa-2xl"></i>
+              <span class="fs-4">Boite à outils</span>
+          </span>
+
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="{% url 'device' %}" class="nav-link {% if request.resolver_match.url_name == "device" %}active{% else %}link-dark{% endif %}" aria-current="page">
+              <i class="fa-solid fa-sort-up"></i>
+              Trier par
+            </a>
+          </li>
+          {% if request.resolver_match.url_name == "log"%}
+          <li>
+            <a href="{% url 'log_all' %}" class="nav-link {% if request.resolver_match.url_name == "log_all" %}active{% else %}link-dark{% endif %}" aria-current="page">
+              <i class="fa-solid fa-sort-up"></i>
+              Voir tous les logs
+            </a>
+          </li>
+          {% else %}
+          <li>
+            <a href="{% url 'log' %}" class="nav-link {% if request.resolver_match.url_name == "log" %}active{% else %}link-dark{% endif %}" aria-current="page">
+              <i class="fa-solid fa-sort-up"></i>
+              Cacher certains logs
+            </a>
+          </li>
+          {% endif %}
+          <li>
+            <a href="{% url 'oid' %}" class="nav-link {% if request.resolver_match.url_name == "oid" %}active{% else %}link-dark{% endif %}">
+              <i class="fa-solid fa-sort-down"></i>
+              Trier par
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'service' %}" class="nav-link {% if request.resolver_match.url_name == "service" %}active{% else %}link-dark{% endif %}">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Alertes seulements
+            </a>
+          </li>
+
+        </ul>
+        <hr>
+    </div>
+</div>
+<script>
+function openLog(id){
+    location.replace("#")
+    window.open('http://google.fr/','','toolbar=no,menubar=no,status=no,location=no')
+}
+</script>
+{% endblock %}
+{% block script_import %}
+{% endblock %}

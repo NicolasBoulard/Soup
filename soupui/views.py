@@ -1,8 +1,10 @@
+import datetime
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
 
-from soupui.models import OID, Device, Service, Transaction
+from soupui.models import OID, Device, Service, Transaction, Threshold, Criticality
 
 
 def index(request):
@@ -209,12 +211,52 @@ def service(request):
         return redirect("/login")
 
 
-def log(request):
-    template = loader.get_template("oid.html")
-    context = {"title": "OID"}
+def log(request, view_all):
+    template = loader.get_template("log.html")
+    context = {"title": "Logs"}
     if request.user.is_authenticated:
-        oids = OID.objects.all()
-        context["oids"] = oids
+        transaction_signature_list = []
+        transaction_list = []
+        transactions = Transaction.objects.all()
+
+        for transaction in Transaction.objects.all():
+            for threshold in transaction.service.threshold.all():
+                criticality = threshold.get_criticality_code(transaction)
+                if view_all:
+                    if not criticality:
+                        criticality = Criticality.objects.get(code="INFO")
+                    transaction_signature = f"{transaction.id}#{transaction.service.id}#{criticality.code}"
+
+                    if transaction_signature not in transaction_signature_list:
+                        transaction_signature_list.append(transaction_signature)
+                        transaction_list.append({
+                            'level': criticality.code,
+                            'service': transaction.service.oid.name,
+                            'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
+                            'value': transaction.value,
+                            'date': transaction.date.strftime("%m/%d/%Y, %H:%M:%S")
+                        })
+                else:
+                    if criticality:
+                        transaction_signature = f"{transaction.id}#{transaction.service.id}#{criticality.code}"
+
+                        if transaction_signature not in transaction_signature_list:
+                            transaction_signature_list.append(transaction_signature)
+                            transaction_list.append({
+                                'level': criticality.code,
+                                'service': transaction.service.oid.name,
+                                'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
+                                'value': transaction.value,
+                                'date': transaction.date.strftime("%m/%d/%Y, %H:%M:%S")
+                            })
+
+
+
+            # TODO if want to print all transactions
+            #print(f"INFO - {transaction.value}")
+        print(transaction_list)
+        print(transaction_signature_list)
+        context["transactions"] = transaction_list
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")

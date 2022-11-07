@@ -22,6 +22,7 @@ class ServiceList(viewsets.ModelViewSet):
     ]
     permission_classes = [permissions.IsAuthenticated]
 
+
 class TransactionView(APIView):
     authentication_classes = [
         TokenAuthentication,
@@ -29,11 +30,12 @@ class TransactionView(APIView):
         BasicAuthentication,
     ]
     permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request, service_id=None):
-        value = request.data['value']
+        value = request.data["value"]
         service = Service.objects.get(id=service_id)
         if service:
             Transaction.objects.create(service=service, value=value)
-            return Response('', status=status.HTTP_201_CREATED)
+            return Response("", status=status.HTTP_201_CREATED)
         else:
-            return Response('', status=status.HTTP_400_BAD_REQUEST)
+            return Response("", status=status.HTTP_400_BAD_REQUEST)
