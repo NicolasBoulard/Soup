@@ -19,70 +19,67 @@
 <main>
     <header>
         <div class="px-3 py-2 text-bg-dark">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-2 col-md-2 col-1">
-                        <a href="/"
-                           class="text-decoration-none">
-                            <img style="height: 100%; width: 100%; display: block " src="{% static 'logo-icon.png' %}">
-                        </a>
-                    </div>
-                    <div class="col-lg-4 col-md-2 col-5"></div>
-                    <div class="col-lg-6 col-md-8 col-6">
-                        <ul class="nav justify-content-center align-items-center text-small">
-                            <li>
-                                <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == "index" %}text-secondary{% else %}text-white{% endif %}">
+            <div class="row align-items-center justify-content-sm-center justify-content-between">
+                <div class="col-lg-2 col-md-2 col-2 col-sm-5">
+                    <a href="/"
+                       class="text-decoration-none">
+                        <img style="height: 100%; width: 100%; display: block " src="{% static 'logo-icon.png' %}">
+                    </a>
+                </div>
+                <div class="col-lg-8 col-md-10 col-4 col-sm-10">
+                    <ul class="nav justify-content-xl-end justify-content-lg-end justify-content-md-end justify-content-sm-center align-items-center text-small">
+                        <li>
+                            <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == "index" %}text-secondary{% else %}text-white{% endif %}">
+                                <span class="bi d-block mx-auto text-center mb-1">
+                                    <i class="fa-regular fa-house fa-2xl"></i>
+                                </span>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == "dashboard" or request.resolver_match.url_name == "dashboard_device" %}text-secondary{% else %}text-white{% endif %}">
+                                <span class="bi d-block mx-auto text-center mb-1">
+                                    <i class="fa-regular fa-gauge fa-2xl"></i>
+                                </span>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'service' %}" class="nav-link {% if request.resolver_match.url_name == "device" or request.resolver_match.url_name == "oid" or request.resolver_match.url_name == "service" %}text-secondary{% else %}text-white{% endif %}">
+                                <span class="bi d-block mx-auto text-center mb-1">
+                                    <i class="fa-regular fa-server fa-2xl"></i>
+                                </span>
+                                Serveurs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'log' %}" class="nav-link text-white position-relative">
+                                <span class="bi d-block mx-auto text-center mb-1">
+                                    <i class="fa-regular fa-bell fa-2xl fa-shake"></i>
+                                </span>
+                                Logs
+                                <span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">1+</span>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex-shrink-0 dropdown">
+                                <a href="#" data-bs-toggle="dropdown" aria-expanded="false" class="d-block text-decoration-none dropdown-toggle nav-link text-white">
                                     <span class="bi d-block mx-auto text-center mb-1">
-                                        <i class="fa-regular fa-house fa-2xl"></i>
+                                        <i class="fa-regular fa-user fa-2xl"></i>
                                     </span>
-                                    Home
+                                    Mon compte
                                 </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == "dashboard" or request.resolver_match.url_name == "dashboard_device" %}text-secondary{% else %}text-white{% endif %}">
-                                    <span class="bi d-block mx-auto text-center mb-1">
-                                        <i class="fa-regular fa-gauge fa-2xl"></i>
-                                    </span>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'service' %}" class="nav-link {% if request.resolver_match.url_name == "device" or request.resolver_match.url_name == "oid" or request.resolver_match.url_name == "service" %}text-secondary{% else %}text-white{% endif %}">
-                                    <span class="bi d-block mx-auto text-center mb-1">
-                                        <i class="fa-regular fa-server fa-2xl"></i>
-                                    </span>
-                                    Serveurs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'log' %}" class="nav-link text-white position-relative">
-                                    <span class="bi d-block mx-auto text-center mb-1">
-                                        <i class="fa-regular fa-bell fa-2xl fa-shake"></i>
-                                    </span>
-                                    Logs
-                                    <span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">1+</span>
-                                </a>
-                            </li>
-                            <li>
-                                <div class="flex-shrink-0 dropdown">
-                                    <a href="#" data-bs-toggle="dropdown" aria-expanded="false" class="d-block text-decoration-none dropdown-toggle nav-link text-white">
-                                        <span class="bi d-block mx-auto text-center mb-1">
-                                            <i class="fa-regular fa-user fa-2xl"></i>
-                                        </span>
-                                        Mon compte
-                                    </a>
-                                    <ul class="dropdown-menu text-small shadow">
-                                        <li><a class="dropdown-item" href="#"><i class="fa-regular fa-gear"></i> Parametres</a></li>
-                                        <li><a class="dropdown-item" href="#"><i class="fa-regular fa-address-card"></i> Profile</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-regular fa-right-from-bracket"></i> Se déconnecter</a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                                <ul class="dropdown-menu text-small shadow">
+                                    <li><a class="dropdown-item" href="#"><i class="fa-regular fa-gear"></i> Parametres</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fa-regular fa-address-card"></i> Profile</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-regular fa-right-from-bracket"></i> Se déconnecter</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
