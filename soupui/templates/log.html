@@ -19,12 +19,13 @@
               <th scope="col">Serveur</th>
               <th scope="col">Valeur</th>
               <th scope="col">Date</th>
+              <th scope="col text-center">À valider</th>
             </tr>
           </thead>
 
           <tbody>
             {% for transaction in transactions %}
-                <tr class="newWindow {% if transaction.level == 'DEBUG' %}table-primary{% elif transaction.level == 'INFO' %}table-default{% elif transaction.level == 'NOTICE' %}table-info{% elif transaction.level == 'WARN' %}table-warning{% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}table-danger{% endif %}" onclick="openLog('{{ transaction.id }}')">
+                <tr class="newWindow {% if transaction.level == 'DEBUG' %}table-primary{% elif transaction.level == 'INFO' %}table-default{% elif transaction.level == 'NOTICE' %}table-info{% elif transaction.level == 'WARN' %}table-warning{% elif transaction.level == 'ERROR' or transaction.level == 'CRIT' or transaction.level == 'ALERT' or transaction.level == 'EMERG' %}table-danger{% endif %}" onclick="openLog('{{ transaction.id }}','{% if transaction.threshold_id %}{{ transaction.threshold_id }}{% endif %}')">
                   <th scope="row">
                       {% if transaction.level == 'DEBUG' %}<span class="text-primary"><i class="fa-solid fa-angles-right"></i> {{ transaction.level }}</span>
                       {% elif transaction.level == 'INFO' %}<span><i class="fa-solid fa-circle-info"></i> {{ transaction.level }}</span>
@@ -36,6 +37,10 @@
                   <td>{{ transaction.server}}</td>
                   <td>{{ transaction.value }}</td>
                   <td>{{ transaction.date }}</td>
+                  <td class="text-center">
+                  {% if not transaction.viewed %}
+                      <i class="text-primary fa-solid fa-check"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %}
+                  </td>
                 </tr>
             {% endfor %}
           </tbody>
@@ -63,7 +68,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'device' %}" class="nav-link {% if request.resolver_match.url_name == "device" %}active{% else %}link-dark{% endif %}" aria-current="page">
+            <a href="{% url 'transaction_all_check' %}" class="nav-link link-dark" aria-current="page">
               <i class="fa-solid fa-check"></i>
               Marquer comme lu tous les logs
             </a>
@@ -101,9 +106,8 @@
     </div>
 </div>
 <script>
-function openLog(id){
-    console.log(id)
-    window.open('/log/'+id,'','toolbar=no,menubar=no,status=no,location=no,height=680,width=640')
+function openLog(id, threshold_id){
+    window.open('/log/'+id+'/'+threshold_id,'','toolbar=no,menubar=no,status=no,location=no,height=680,width=640')
 }
 </script>
 {% endblock %}

@@ -1,6 +1,7 @@
 import datetime
+import json
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.template import loader
 
@@ -19,8 +20,6 @@ def index(request):
 def dashboard_device(request, device_id):
     template = loader.get_template("dashboard.html")
     s = Service.objects.get(id=3)
-    print(s.transaction_set.all())
-    # Transaction.objects.filter(s)
 
     context = {
         "title": "Dashboard",
@@ -184,7 +183,6 @@ def service_add(request):
             if "name" and "device" and "oid" in request.POST:
                 name = request.POST.get("name")
                 device_id = request.POST.get("device")
-                print(device_id)
                 oid_id = request.POST.get("oid")
                 if device_id != "--------------" and oid_id != "--------------":
                     device = Device.objects.get(id=device_id)
@@ -218,50 +216,97 @@ def log(request, view_all):
         transaction_signature_list = []
         transaction_list = []
         for transaction in Transaction.objects.all():
+            # TODO fix if no threshold not defined, not transaction showed
             for threshold in transaction.service.threshold.all():
                 criticality = threshold.get_criticality_code(transaction)
                 if view_all:
                     if not criticality:
                         criticality = Criticality.objects.get(code="INFO")
-                    transaction_signature = f"{transaction.id}#{transaction.service.id}#{criticality.code}"
+                        threshold.id = ""
+                    transaction_signature = (
+                        f"{transaction.id}#{transaction.service.id}#{criticality.code}"
+                    )
 
                     if transaction_signature not in transaction_signature_list:
                         transaction_signature_list.append(transaction_signature)
-                        transaction_list.append({
-                            'id': transaction.id,
-                            'level': criticality.code,
-                            'service': transaction.service.oid.name,
-                            'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
-                            'value': transaction.value,
-                            'date': transaction.date.strftime("%m/%d/%Y, %H:%M:%S")
-                        })
+                        transaction_list.append(
+                            {
+                                "id": transaction.id,
+                                "level": criticality.code,
+                                "threshold_id": threshold.id,
+                                "service": transaction.service.oid.name,
+                                "server": f"{transaction.service.device.ip}:{transaction.service.device.port}",
+                                "value": transaction.value,
+                                "date": transaction.date.strftime("%m/%d/%Y, %H:%M:%S"),
+                                "viewed": transaction.viewed,
+                            }
+                        )
                 else:
                     if criticality:
                         transaction_signature = f"{transaction.id}#{transaction.service.id}#{criticality.code}"
 
                         if transaction_signature not in transaction_signature_list:
                             transaction_signature_list.append(transaction_signature)
-                            transaction_list.append({
-                                'id': transaction.id,
-                                'level': criticality.code,
-                                'service': transaction.service.oid.name,
-                                'server': f'{transaction.service.device.ip}:{transaction.service.device.port}',
-                                'value': transaction.value,
-                                'date': transaction.date.strftime("%m/%d/%Y, %H:%M:%S")
-                            })
+                            transaction_list.append(
+                                {
+                                    "id": transaction.id,
+                                    "level": criticality.code,
+                                    "threshold_id": threshold.id,
+                                    "service": transaction.service.oid.name,
+                                    "server": f"{transaction.service.device.ip}:{transaction.service.device.port}",
+                                    "value": transaction.value,
+                                    "date": transaction.date.strftime(
+                                        "%m/%d/%Y, %H:%M:%S"
+                                    ),
+                                    "viewed": transaction.viewed,
+                                }
+                            )
         context["transactions"] = transaction_list
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
 
-def log_detail(request, log_id):
+
+def log_detail(request, log_id, threshold_id=""):
     template = loader.get_template("log_detail.html")
     context = {"title": "Log"}
     if request.user.is_authenticated:
         if not log_id:
             return redirect("/log")
+        transaction = Transaction.objects.get(id=log_id)
+        if threshold_id:
+            threshold = Threshold.objects.get(id=threshold_id)
+            criticality = threshold.get_criticality_code(transaction)
+            context["threshold"] = threshold
+            context["criticality"] = criticality
+        context["transaction"] = transaction
 
-        context["transactions"] = "test"
         return HttpResponse(template.render(context, request))
+    else:
+        return redirect("/login")
+
+
+def transaction_check(request, transaction_id, threshold_id):
+    if request.user.is_authenticated:
+        transaction_id=int(transaction_id)
+        transaction = Transaction.objects.get(id=transaction_id)
+        if transaction:
+            if not transaction.viewed:
+                transaction.viewed = True
+            else:
+                transaction.viewed = False
+            transaction.save()
+            transactionjson = {}
+            transactionjson['transaction'] = transaction.viewed
+            return redirect(f"/log/{transaction.id}/{threshold_id}/")
+        else:
+            return HttpResponseNotFound("Not found")
+    else:
+        return redirect("/login")
+
+def transaction_all_check(request):
+    if request.user.is_authenticated:
+        transaction = Transaction.objects.all().update(viewed=True)
+        return redirect("/log/all")
     else:
         return redirect("/login")
