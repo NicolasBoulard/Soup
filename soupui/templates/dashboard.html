@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load transaction_filter %}
 {% block style_import %}
 <style>
 .nav-scroller {
@@ -90,7 +91,7 @@ white-space: nowrap;
                 {% for transaction in service.transaction_set.all %}
                 {
                   x: "{{ transaction.date|date:"c" }}",
-                  y: {{ transaction.value }}
+                  y: {{ transaction.value|transaction_value }}
                 },
                 {% endfor %}]
           }],
