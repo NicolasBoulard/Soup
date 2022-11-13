@@ -215,7 +215,7 @@ def log(request, view_all):
     if request.user.is_authenticated:
         transaction_signature_list = []
         transaction_list = []
-        for transaction in Transaction.objects.all():
+        for transaction in Transaction.objects.all().order_by('-date'):
             # TODO fix if no threshold not defined, not transaction showed
             for threshold in transaction.service.threshold.all():
                 criticality = threshold.get_criticality_code(transaction)
