@@ -7,10 +7,16 @@ from django.template import loader
 
 from soupui.models import OID, Device, Service, Transaction, Threshold, Criticality
 
+def logNotificationNumber():
+    criticalitys = Criticality.objects.filter(index__lte=4)
+    transaction = Transaction.objects.filter(service__threshold__criticality__in=criticalitys, viewed=False).distinct()
+    return len(transaction)
 
 def index(request):
     template = loader.get_template("index.html")
     context = {"title": "Accueil"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
@@ -18,7 +24,7 @@ def index(request):
 
 
 def dashboard_device(request, device_id):
-    template = loader.get_template("dashboard.html")
+    template = loader.get_template("dashboard_graph.html")
     s = Service.objects.get(id=3)
 
     context = {
@@ -27,15 +33,38 @@ def dashboard_device(request, device_id):
         "devices": Device.objects.all(),
         "services": Service.objects.filter(device__id=device_id),
     }
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
 
+def dashboard_service(request, device_id, service_id):
+    template = loader.get_template("log_service.html")
+    service = Service.objects.get(id=service_id)
+
+    context = {
+        "title": "Dashboard",
+            "device_id": device_id,
+        "devices": Device.objects.all(),
+        "services": Service.objects.filter(device__id=device_id),
+        "service_id": service_id,
+        "service": service,
+        "transaction_set": service.transaction_set.all().order_by("-date"),
+    }
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
+    if request.user.is_authenticated:
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect("/login")
 
 def dashboard(request):
     template = loader.get_template("dashboard.html")
     context = {"title": "Dashboard", "devices": Device.objects.all()}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
@@ -88,6 +117,8 @@ def device_add(request):
 def device(request):
     template = loader.get_template("device.html")
     context = {"title": "Devices"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         devices = Device.objects.all()
         context["devices"] = devices
@@ -138,6 +169,8 @@ def oid_add(request):
 def oid(request):
     template = loader.get_template("oid.html")
     context = {"title": "OID"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         oids = OID.objects.all()
         context["oids"] = oids
@@ -197,6 +230,8 @@ def service_add(request):
 def service(request):
     template = loader.get_template("service.html")
     context = {"title": "Services"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         services = Service.objects.all()
         oids = OID.objects.all()
@@ -212,6 +247,8 @@ def service(request):
 def log(request, view_all):
     template = loader.get_template("log.html")
     context = {"title": "Logs"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         transaction_signature_list = []
         transaction_list = []
@@ -270,6 +307,8 @@ def log(request, view_all):
 def log_detail(request, log_id, threshold_id=""):
     template = loader.get_template("log_detail.html")
     context = {"title": "Log"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
     if request.user.is_authenticated:
         if not log_id:
             return redirect("/log")
@@ -286,7 +325,7 @@ def log_detail(request, log_id, threshold_id=""):
         return redirect("/login")
 
 
-def transaction_check(request, transaction_id, threshold_id):
+def transaction_check(request, transaction_id, threshold_id=""):
     if request.user.is_authenticated:
         transaction_id=int(transaction_id)
         transaction = Transaction.objects.get(id=transaction_id)
@@ -298,7 +337,10 @@ def transaction_check(request, transaction_id, threshold_id):
             transaction.save()
             transactionjson = {}
             transactionjson['transaction'] = transaction.viewed
-            return redirect(f"/log/{transaction.id}/{threshold_id}/")
+            if threshold_id:
+                return redirect(f"/log/{transaction.id}/{threshold_id}/")
+            else:
+                return redirect(f"/log/{transaction.id}/")
         else:
             return HttpResponseNotFound("Not found")
     else:

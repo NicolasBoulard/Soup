@@ -80,7 +80,11 @@
             </ul>
         </div>
         <div class="mt-4 text-center">
+            {% if threshold.id %}
             <a href="{% url 'transaction_check' transaction.id threshold.id %}"><button type="submit" class="text-center btn btn-success">
+            {% else %}
+            <a href="{% url 'transaction_check' transaction.id %}"><button type="submit" class="text-center btn btn-success">
+            {% endif %}
                 {% if not transaction.viewed %}
                     <i class="fa-solid fa-check"></i> Marquer comme lu</button>
                 {% else %}

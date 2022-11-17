@@ -1,0 +1,85 @@
+{% extends "dashboard.html" %}
+{% load transaction_filter %}
+{% block data %}
+<div class="nav-scroller bg-body shadow-sm second">
+  <nav class="nav" aria-label="Secondary navigation">
+  {% for service in services %}
+      <a class="nav-link {% if service_id == service.id %}active{% endif %}" aria-current="page" href="{% url 'dashboard_service' device_id service.id%}">{{ service.name }} </a>
+  {% endfor %}
+    <!--<a class="nav-link" href="#">
+      Friends
+      <span class="badge text-bg-light rounded-pill align-text-bottom">27</span>
+    </a>
+    <a class="nav-link" href="#">Explore</a>-->
+  </nav>
+</div>
+<div>
+    <div class="container text-center">
+        <div class="row justify-content-center">
+
+            <div class="col-6">
+                {% if not service.transaction_set.all %}
+                <div style="min-height: 55vh" class="text-bg-light h-100 d-flex align-items-center justify-content-center">
+
+                    <p class=""><i class="fa-solid fa-triangle-exclamation"></i> Ce graph n'a pas encore de métrique</p>
+
+                </div>
+                {% else %}
+                <div id="chart-{{ service.id }}">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-6">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">Valeur</th>
+                      <th scope="col">Date</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for transaction in transaction_set %}
+                        <tr class="newWindow">
+                          <td>{{ transaction.value }}</td>
+                          <td>{{ transaction.date|date:"d/m/Y, H:i:s" }}</td>
+
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script_import %}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+
+        var options{{ service.id }} = {
+          chart: {
+            type: 'line'
+          },
+          series: [{
+            name: '{{ service.name }}',
+            data: [
+                {% for transaction in service.transaction_set.all %}
+                {
+                  x: "{{ transaction.date|date:"c" }}",
+                  y: {{ transaction.value|transaction_value }}
+                },
+                {% endfor %}]
+          }],
+          xaxis: {
+              type: "datetime"
+
+          }
+        }
+
+        var chart{{ service.id }} = new ApexCharts(document.querySelector("#chart-{{ service.id }}"), options{{ service.id }});
+
+        chart{{ service.id }}.render();
+    </script>
+{% endblock %}

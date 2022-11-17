@@ -3,7 +3,6 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as authviews
 from .forms import UserLoginForm
-
 urlpatterns = [
     path(
         "login/",
@@ -22,6 +21,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("dashboard", views.dashboard, name="dashboard"),
     path("dashboard/<int:device_id>/", views.dashboard_device, name="dashboard_device"),
+    path("dashboard/<int:device_id>/<int:service_id>/", views.dashboard_service, name="dashboard_service"),
     path("log", views.log, {"view_all": False}, name="log"),
     path("log/all", views.log, {"view_all": True}, name="log_all"),
     path("log/<int:log_id>/", views.log_detail, name="log_detail"),
@@ -38,6 +38,8 @@ urlpatterns = [
     path("service/add", views.service_add, name="service_add"),
     path("service/edit/<int:service_id>/", views.service_edit, name="service_edit"),
     path("service/remove", views.service_remove, name="service_remove"),
+    path("transaction/viewed/<int:transaction_id>/", views.transaction_check, name="transaction_check"),
     path("transaction/viewed/<int:transaction_id>/<int:threshold_id>/", views.transaction_check, name="transaction_check"),
     path("transaction/viewed/all/", views.transaction_all_check, name="transaction_all_check"),
 ]
+

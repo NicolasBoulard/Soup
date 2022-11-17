@@ -37,7 +37,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == "dashboard" or request.resolver_match.url_name == "dashboard_device" %}text-secondary{% else %}text-white{% endif %}">
+                            <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == "dashboard" or request.resolver_match.url_name == "dashboard_device" or request.resolver_match.url_name == "dashboard_service" %}text-secondary{% else %}text-white{% endif %}">
                                 <span class="bi d-block mx-auto text-center mb-1">
                                     <i class="fa-regular fa-gauge fa-2xl"></i>
                                 </span>
@@ -58,7 +58,7 @@
                                     <i class="fa-regular fa-bell fa-2xl fa-shake"></i>
                                 </span>
                                 Logs
-                                <span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">1+</span>
+                                {% if log_notif >= 1 and log_notif < 10 %}<span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">{{ log_notif }}</span>{% elif log_notif > 10 %}<span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">9+</span>{% endif %}
                             </a>
                         </li>
                         <li>

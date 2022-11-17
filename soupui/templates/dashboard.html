@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% load transaction_filter %}
 {% block style_import %}
 <style>
 .nav-scroller {
@@ -38,6 +37,11 @@ white-space: nowrap;
   font-weight: 500;
   color: #343a40;
 }
+.second{
+    border-top: 1px;
+    border-top-color: black;
+    border-top-style: dotted;
+}
 </style>
 {% endblock %}
 {% block content %}
@@ -53,57 +57,8 @@ white-space: nowrap;
     <a class="nav-link" href="#">Explore</a>-->
   </nav>
 </div>
-<div>
-    <div class="container text-center">
-        <div class="row justify-content-center">
-            {% for service in services %}
-            <div class="col-6">
-                {% if not service.transaction_set.all %}
-                <div style="min-height: 55vh" class="text-bg-light h-100 d-flex align-items-center justify-content-center">
-
-                    <p class=""><i class="fa-solid fa-triangle-exclamation"></i> Ce graph n'a pas encore de métrique</p>
-
-                </div>
-                {% else %}
-                <div id="chart-{{ service.id }}">
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-
+{% block data %}
 {% endblock %}
-{% block script_import %}
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        {% for service in services %}
 
-        var options{{ service.id }} = {
-          chart: {
-            type: 'line'
-          },
-          series: [{
-            name: '{{ service.name }}',
-            data: [
-                {% for transaction in service.transaction_set.all %}
-                {
-                  x: "{{ transaction.date|date:"c" }}",
-                  y: {{ transaction.value|transaction_value }}
-                },
-                {% endfor %}]
-          }],
-          xaxis: {
-              type: "datetime"
 
-          }
-        }
-
-        var chart{{ service.id }} = new ApexCharts(document.querySelector("#chart-{{ service.id }}"), options{{ service.id }});
-
-        chart{{ service.id }}.render();
-        {% endfor %}
-    </script>
 {% endblock %}
