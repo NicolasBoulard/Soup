@@ -31,6 +31,12 @@
               Liste des services
             </a>
           </li>
+          <li>
+            <a href="{% url 'threshold' %}" class="nav-link {% if request.resolver_match.url_name == "threshold" %}active{% else %}link-dark{% endif %}">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Seuil d'alerte
+            </a>
+          </li>
 
         </ul>
         <hr>

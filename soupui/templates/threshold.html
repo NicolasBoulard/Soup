@@ -1,0 +1,161 @@
+{% extends "services.html" %}
+{% block list %}
+
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+        <div class="my-4 d-flex justify-content-between">
+            <h2 class="">Liste des seuils</h2>
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Action
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#additem"><i class="fa-solid fa-plus"></i> Ajouter</a></li>
+                <li><a class="dropdown-item" href="#" onclick="editthreshold()"><i class="fa-solid fa-pen"></i> Modifier</a></li>
+                <li><a class="dropdown-item" href="#" onclick="showCheckbox()"><i class="fa-solid fa-trash"></i> Supprimer</a></li>
+              </ul>
+            </div>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nom</th>
+              <th scope="col">OID</th>
+              <th scope="col">Equipement</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <form method="post" action="{% url 'threshold_remove' %}">
+            {% csrf_token %}
+                {% for threshold in thresholds %}
+                <tr>
+                  <th scope="row">
+                      <span class="thresholdid">{{ threshold.id }}</span>
+                      <input class="d-none form-check-input checkboxdelete" type="checkbox" value="true" name="{{ threshold.id }}" id="checkbox_remove">
+                  </th>
+                  <td>{{ threshold.function }}</td>
+                  <td>{{ threshold.value }}</td>
+                  <td>{{ threshold.criticality.name }}</td>
+                  <td><span type="text" data-bs-toggle="modal" data-bs-target="#edit-item-{{ threshold.id }}" class="btn-edit d-none btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><i class="fa-solid fa-pen"></i> Modifier</span></td>
+                </tr>
+                {% endfor %}
+                <button type="submit" class="btn-delete d-none btn btn-danger"><i class="fa-solid fa-trash"></i> Supprimer</button>
+            </form>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="additem" tabindex="-1" aria-labelledby="additem" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ajouter un seuil d'alerte</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'threshold_add' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-function"><i class="fa-solid fa-calculator"></i></span>
+              <select name="function" class="form-select" aria-label="Default select example" aria-describedby="add-function" required>
+                  <option selected>--------------</option>
+                  <option value="MAX">Maximum</option>
+                  <option value="EQUAL">Egal</option>
+                  <option value="MIN">Minimum</option>
+              </select>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-chart-line"></i></span>
+              <input name="value" type="text" class="form-control" placeholder="Valeur seuil" aria-label="Value" aria-describedby="add-value" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-oid"><i class="fa-solid fa-book"></i></span>
+              <select name="criticality" class="form-select" aria-label="Default select example" aria-describedby="add-oid" required>
+                  <option selected>--------------</option>
+                  {% for criticality in criticalitys %}
+                  <option value="{{ criticality.id }}">{{ criticality.name }} - {{ criticality.code }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Ajouter</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% for threshold in thresholds %}
+<div class="modal fade" id="edit-item-{{ threshold.id }}" tabindex="-1" aria-labelledby="edit-item-{{ threshold.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier le seuil d'alerte #{{ threshold.id }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post" action="{% url 'threshold_edit' threshold_id=threshold.id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-function"><i class="fa-solid fa-calculator"></i></span>
+              <select name="function" class="form-select" aria-label="Default select example" aria-describedby="add-function" required>
+                  <option value="MAX" {% if threshold.function == 'MAX' %}selected{% endif %}>Maximum</option>
+                  <option value="EQUAL" {% if threshold.function == 'EQUAL' %}selected{% endif %}>Egal</option>
+                  <option value="MIN" {% if threshold.function == 'MIN' %}selected{% endif %}>Minimum</option>
+              </select>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-name"><i class="fa-solid fa-chart-line"></i></span>
+              <input value="{{ threshold.value }}" name="value" type="text" class="form-control" placeholder="Valeur seuil" aria-label="Value" aria-describedby="add-value" required>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="add-oid"><i class="fa-solid fa-book"></i></span>
+              <select name="criticality" class="form-select" aria-label="Default select example" aria-describedby="add-oid" required>
+                  {% for criticality in criticalitys %}
+                  <option value="{{ criticality.id }}" {% if criticality.id == threshold.criticality.id %}selected{% endif %}>{{ criticality.name }} - {{ criticality.code }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i> Annuler</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen"></i> Modifier</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+function showCheckbox() {
+    console.log('ah')
+    thresholdid = document.getElementsByClassName('thresholdid')
+    for (let threshold of thresholdid) {
+        threshold.classList.add('d-none')
+    }
+    checkboxs = document.getElementsByClassName('checkboxdelete')
+    for (let checkbox of checkboxs) {
+        console.log(checkbox)
+        checkbox.classList.remove('d-none')
+    }
+    btndelete = document.getElementsByClassName('btn-delete')[0]
+    btndelete.classList.remove('d-none')
+}
+
+function editthreshold() {
+    btnedit = document.getElementsByClassName('btn-edit')
+    for (let btn of btnedit) {
+        btn.classList.remove('d-none')
+    }
+}
+</script>
+{% endblock %}

@@ -45,20 +45,20 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'service' %}" class="nav-link {% if request.resolver_match.url_name == "device" or request.resolver_match.url_name == "oid" or request.resolver_match.url_name == "service" %}text-secondary{% else %}text-white{% endif %}">
+                            <a href="{% url 'log' %}" class="nav-link {% if request.resolver_match.url_name == "log" or request.resolver_match.url_name == "log_all" %}text-secondary{% else %}text-white{% endif %} position-relative">
                                 <span class="bi d-block mx-auto text-center mb-1">
-                                    <i class="fa-regular fa-server fa-2xl"></i>
-                                </span>
-                                Serveurs
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'log' %}" class="nav-link text-white position-relative">
-                                <span class="bi d-block mx-auto text-center mb-1">
-                                    <i class="fa-regular fa-bell fa-2xl fa-shake"></i>
+                                    <i class="fa-regular fa-bell fa-2xl {% if log_notif > 0 %}fa-shake{% endif %}"></i>
                                 </span>
                                 Logs
                                 {% if log_notif >= 1 and log_notif < 10 %}<span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">{{ log_notif }}</span>{% elif log_notif > 10 %}<span class="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger">9+</span>{% endif %}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'service' %}" class="nav-link {% if request.resolver_match.url_name == "device" or request.resolver_match.url_name == "oid" or request.resolver_match.url_name == "service" or request.resolver_match.url_name == "threshold" %}text-secondary{% else %}text-white{% endif %}">
+                                <span class="bi d-block mx-auto text-center mb-1">
+                                    <i class="fa-regular fa-gear fa-2xl"></i>
+                                </span>
+                                Config
                             </a>
                         </li>
                         <li>

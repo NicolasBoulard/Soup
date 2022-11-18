@@ -70,7 +70,64 @@ def dashboard(request):
     else:
         return redirect("/login")
 
+def threshold(request):
+    template = loader.get_template("threshold.html")
+    context = {"title": "Seuil"}
+    log_notif = logNotificationNumber()
+    context['log_notif'] = log_notif
+    if request.user.is_authenticated:
+        thresholds = Threshold.objects.all()
+        context["thresholds"] = thresholds
+        context["criticalitys"] = Criticality.objects.all()
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect("/login")
 
+def threshold_remove(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            for checkbox_key in request.POST.keys():
+                if checkbox_key != "csrfmiddlewaretoken":
+                    Threshold.objects.get(id=int(checkbox_key)).delete()
+
+        return redirect("/service/threshold")
+    else:
+        return redirect("/login")
+
+
+def threshold_edit(request, threshold_id):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            if "function" and "value" and "criticality" in request.POST:
+                function = request.POST.get("function")
+                value = request.POST.get("value")
+                criticality_id = request.POST.get("criticality")
+                threshold = Threshold.objects.get(id=threshold_id)
+                threshold.function = function
+                threshold.value = value
+                criticality = Criticality.objects.get(id=criticality_id)
+                threshold.criticality = criticality
+                threshold.save()
+
+        return redirect("/service/threshold")
+    else:
+        return redirect("/login")
+
+
+def threshold_add(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            if "function" and "value" and "criticality" in request.POST:
+                function = request.POST.get("function")
+                value = request.POST.get("value")
+                criticality = request.POST.get("criticality")
+                if function != "--------------" and criticality != "--------------" and value != "":
+                    criticality = Criticality.objects.get(id=criticality)
+                    Threshold.objects.create(function=function, value=value, criticality=criticality)
+
+        return redirect("/service/threshold")
+    else:
+        return redirect("/login")
 def device_remove(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -217,10 +274,14 @@ def service_add(request):
                 name = request.POST.get("name")
                 device_id = request.POST.get("device")
                 oid_id = request.POST.get("oid")
-                if device_id != "--------------" and oid_id != "--------------":
+                thresholds_id = request.POST.get("threshold")
+                if device_id != "--------------" and oid_id != "--------------" and thresholds_id != "--------------":
                     device = Device.objects.get(id=device_id)
                     oid = OID.objects.get(id=oid_id)
-                    Service.objects.create(name=name, device=device, oid=oid)
+                    print(thresholds_id)
+                    thresholds = Threshold.objects.filter(id__in=thresholds_id)
+                    service = Service.objects.create(name=name, device=device, oid=oid)
+                    service.threshold.set(thresholds)
 
         return redirect("/service")
     else:
@@ -236,9 +297,11 @@ def service(request):
         services = Service.objects.all()
         oids = OID.objects.all()
         devices = Device.objects.all()
+        thresholds = Threshold.objects.all()
         context["services"] = services
         context["oids"] = oids
         context["devices"] = devices
+        context["thresholds"] = thresholds
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
