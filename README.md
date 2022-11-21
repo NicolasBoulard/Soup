@@ -1,5 +1,6 @@
 # Let's start with soup
-## For developers
+This is part of the project [souptor](https://github.com/Dede1441/souptor) (collector for soup) which is needed.
+## For developers 💻
 1. Create venv : `python -m venv .venv`
 2. Activate venv : `.venv\Script\Activate`
 3. Install python requirements : `pip install -r requirements.txt`
@@ -10,6 +11,7 @@ example: `DJANGO_SETTINGS_MODULE=soup.settings.dev`
 5. Create database : `python manage.py migrate`
 6. Create a super user : `python manage.py createsuperuser --username=admin`
 7. Launch debug server : `python manage.py runserver --settings=soup.settings.dev`
+
 ## For integrators
 Use the docker image available on ghcr.io
 
