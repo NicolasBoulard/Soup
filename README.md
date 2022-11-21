@@ -47,30 +47,36 @@ STATICFILES_DIRS = [
 ```
 
 ### Production
-```python
-from .base import *
+1. Clone this repo
+2. Add your config at `docker/docker-compose/conf/prod.py` with this content:
+    ```python
+    from .base import *
 
-DEBUG = False
-
-ALLOWED_HOSTS = ["*"]
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    DEBUG = False
+    
+    ALLOWED_HOSTS = ["*"]
+    
+    # Database
+    # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+    
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = "static/"
-
-STATIC_ROOT = os.path.join(BASE_DIR, "../../static")
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-```
+    
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/4.1/howto/static-files/
+    
+    STATIC_URL = "static/"
+    
+    STATIC_ROOT = os.path.join(BASE_DIR, "../../static")
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
+    ```
+3. Run `docker-compose up -d`
+4. Execute the command to add an user to the container db:
+`docker exec -it soup python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')"`
+5. Now go on [127.0.0.1:8000](http://127.0.0.1:8000) and enjoy the app 🚀
