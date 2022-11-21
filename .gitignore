@@ -17,3 +17,6 @@ soup/settings/*
 !soup/settings/__init__.py
 !soup/settings/base.py
 
+#Ignore docker-compose container
+docker/docker-compose/conf/*
+docker/docker-compose/db/*
