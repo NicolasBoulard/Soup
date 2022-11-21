@@ -12,6 +12,12 @@ services:
     volumes:
       - ./docker/docker-compose/db/:/app/db/
       - ./docker/docker-compose/conf/prod.py:/app/soup/settings/prod.py
+    networks:
+      - souptor
+
+networks:
+  souptor:
+    external: true
 #    networks:
 #      - db
 #

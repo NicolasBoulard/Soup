@@ -82,3 +82,7 @@ STATICFILES_DIRS = [
 4. Execute the command to add an user to the container db:
 `docker exec -it soup python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')"`
 5. Now go on [127.0.0.1:8000](http://127.0.0.1:8000) and enjoy the app 🚀
+
+### How to get the Token APP
+**First of all soup server must be started.**
+After go on [http://127.0.0.1:8000/admin/authtoken/tokenproxy/add/](http://localhost:8000/admin/authtoken/tokenproxy/add/) and add a new token from the admin user. After clicking on save button you will see the token on the `Key` column.
