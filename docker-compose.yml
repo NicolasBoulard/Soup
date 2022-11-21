@@ -1,0 +1,16 @@
+version: '3.2'
+
+services:
+  soup:
+    container_name: soup
+    image: "ghcr.io/nicolasboulard/soup:master"
+    restart: unless-stopped
+    environment:
+      - DJANGO_SETTINGS_MODULE=soup.settings.prod
+#    networks:
+#      - db
+#
+#networks:
+#  db:
+#    internal:
+#      name: db

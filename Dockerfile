@@ -4,5 +4,11 @@ WORKDIR /app
 COPY requirements.txt /app
 RUN pip3 install -r requirements.txt --no-cache-dir
 COPY . /app
-ENTRYPOINT ["python3"]
-CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+
+RUN cd /app/docker &&\
+    mv * ../ && cd .. &&\
+    rm -rf /app/docker/
+#ENTRYPOINT ["python3"]
+RUN chmod +x /app/prestart.sh
+CMD ["/app/prestart.sh"]
+EXPOSE 8000

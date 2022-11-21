@@ -11,3 +11,8 @@ db.sqlite3
 .vscode
 /.venv/
 ~$*
+
+##Ignore custom settings
+#!soup/settings/__init__.py
+#!soup/settings/base.py
+#soup/settings/
