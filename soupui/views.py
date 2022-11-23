@@ -7,16 +7,20 @@ from django.template import loader
 
 from soupui.models import OID, Device, Service, Transaction, Threshold, Criticality
 
+
 def logNotificationNumber():
     criticalitys = Criticality.objects.filter(index__lte=4)
-    transaction = Transaction.objects.filter(service__threshold__criticality__in=criticalitys, viewed=False).distinct()
+    transaction = Transaction.objects.filter(
+        service__threshold__criticality__in=criticalitys, viewed=False
+    ).distinct()
     return len(transaction)
+
 
 def index(request):
     template = loader.get_template("index.html")
     context = {"title": "Accueil"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
@@ -25,7 +29,6 @@ def index(request):
 
 def dashboard_device(request, device_id):
     template = loader.get_template("dashboard_graph.html")
-    s = Service.objects.get(id=3)
 
     context = {
         "title": "Dashboard",
@@ -34,11 +37,12 @@ def dashboard_device(request, device_id):
         "services": Service.objects.filter(device__id=device_id),
     }
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
+
 
 def dashboard_service(request, device_id, service_id):
     template = loader.get_template("log_service.html")
@@ -46,7 +50,7 @@ def dashboard_service(request, device_id, service_id):
 
     context = {
         "title": "Dashboard",
-            "device_id": device_id,
+        "device_id": device_id,
         "devices": Device.objects.all(),
         "services": Service.objects.filter(device__id=device_id),
         "service_id": service_id,
@@ -54,27 +58,29 @@ def dashboard_service(request, device_id, service_id):
         "transaction_set": service.transaction_set.all().order_by("-date"),
     }
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
+
 
 def dashboard(request):
     template = loader.get_template("dashboard.html")
     context = {"title": "Dashboard", "devices": Device.objects.all()}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
 
+
 def threshold(request):
     template = loader.get_template("threshold.html")
     context = {"title": "Seuil"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         thresholds = Threshold.objects.all()
         context["thresholds"] = thresholds
@@ -82,6 +88,7 @@ def threshold(request):
         return HttpResponse(template.render(context, request))
     else:
         return redirect("/login")
+
 
 def threshold_remove(request):
     if request.user.is_authenticated:
@@ -121,13 +128,21 @@ def threshold_add(request):
                 function = request.POST.get("function")
                 value = request.POST.get("value")
                 criticality = request.POST.get("criticality")
-                if function != "--------------" and criticality != "--------------" and value != "":
+                if (
+                    function != "--------------"
+                    and criticality != "--------------"
+                    and value != ""
+                ):
                     criticality = Criticality.objects.get(id=criticality)
-                    Threshold.objects.create(function=function, value=value, criticality=criticality)
+                    Threshold.objects.create(
+                        function=function, value=value, criticality=criticality
+                    )
 
         return redirect("/service/threshold")
     else:
         return redirect("/login")
+
+
 def device_remove(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -175,7 +190,7 @@ def device(request):
     template = loader.get_template("device.html")
     context = {"title": "Devices"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         devices = Device.objects.all()
         context["devices"] = devices
@@ -227,7 +242,7 @@ def oid(request):
     template = loader.get_template("oid.html")
     context = {"title": "OID"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         oids = OID.objects.all()
         context["oids"] = oids
@@ -275,7 +290,11 @@ def service_add(request):
                 device_id = request.POST.get("device")
                 oid_id = request.POST.get("oid")
                 thresholds_id = request.POST.get("threshold")
-                if device_id != "--------------" and oid_id != "--------------" and thresholds_id != "--------------":
+                if (
+                    device_id != "--------------"
+                    and oid_id != "--------------"
+                    and thresholds_id != "--------------"
+                ):
                     device = Device.objects.get(id=device_id)
                     oid = OID.objects.get(id=oid_id)
                     print(thresholds_id)
@@ -292,7 +311,7 @@ def service(request):
     template = loader.get_template("service.html")
     context = {"title": "Services"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         services = Service.objects.all()
         oids = OID.objects.all()
@@ -311,11 +330,11 @@ def log(request, view_all):
     template = loader.get_template("log.html")
     context = {"title": "Logs"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         transaction_signature_list = []
         transaction_list = []
-        for transaction in Transaction.objects.all().order_by('-date'):
+        for transaction in Transaction.objects.all().order_by("-date"):
             # TODO fix if no threshold not defined, not transaction showed
             for threshold in transaction.service.threshold.all():
                 criticality = threshold.get_criticality_code(transaction)
@@ -371,7 +390,7 @@ def log_detail(request, log_id, threshold_id=""):
     template = loader.get_template("log_detail.html")
     context = {"title": "Log"}
     log_notif = logNotificationNumber()
-    context['log_notif'] = log_notif
+    context["log_notif"] = log_notif
     if request.user.is_authenticated:
         if not log_id:
             return redirect("/log")
@@ -390,7 +409,7 @@ def log_detail(request, log_id, threshold_id=""):
 
 def transaction_check(request, transaction_id, threshold_id=""):
     if request.user.is_authenticated:
-        transaction_id=int(transaction_id)
+        transaction_id = int(transaction_id)
         transaction = Transaction.objects.get(id=transaction_id)
         if transaction:
             if not transaction.viewed:
@@ -399,7 +418,7 @@ def transaction_check(request, transaction_id, threshold_id=""):
                 transaction.viewed = False
             transaction.save()
             transactionjson = {}
-            transactionjson['transaction'] = transaction.viewed
+            transactionjson["transaction"] = transaction.viewed
             if threshold_id:
                 return redirect(f"/log/{transaction.id}/{threshold_id}/")
             else:
@@ -408,6 +427,7 @@ def transaction_check(request, transaction_id, threshold_id=""):
             return HttpResponseNotFound("Not found")
     else:
         return redirect("/login")
+
 
 def transaction_all_check(request):
     if request.user.is_authenticated:
