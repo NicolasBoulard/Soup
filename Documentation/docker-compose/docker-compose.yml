@@ -1,0 +1,65 @@
+version: '3.2'
+
+services:
+  soup:
+    container_name: soup
+    image: "ghcr.io/nicolasboulard/soup:master"
+    restart: unless-stopped
+    environment:
+      - DJANGO_SETTINGS_MODULE=soup.settings.prod
+    ports:
+      - 8000:8000
+    volumes:
+      - ./db/:/app/db/
+      - ./prod.py:/app/soup/settings/prod.py
+    networks:
+      - souptor
+
+  souptor:
+    container_name: souptor
+    image: "ghcr.io/dede1441/souptor:main"
+    restart: unless-stopped
+    depends_on:
+      - soup
+      - client-souptor01
+      - client-souptor02
+      - client-souptor03
+    environment:
+      - URL_APP=http://soup:8000
+      - TOKEN_APP=
+    networks:
+      - souptor-client
+      - souptor
+
+  client-souptor01:
+    container_name: client-souptor01
+    image: "ghcr.io/dede1441/soup-client:main"
+    restart: unless-stopped
+    networks:
+      - souptor-client
+    ports:
+      - "161:161/udp"
+
+  client-souptor02:
+    container_name: client-souptor02
+    image: "ghcr.io/dede1441/soup-client:main"
+    restart: unless-stopped
+    networks:
+      - souptor-client
+    ports:
+      - "162:161/udp"
+
+  client-souptor03:
+    container_name: client-souptor03
+    image: "ghcr.io/dede1441/soup-client:main"
+    restart: unless-stopped
+    networks:
+      - souptor-client
+    ports:
+      - "163:161/udp"
+
+networks:
+  souptor:
+    external: true
+  souptor-client:
+    external: true

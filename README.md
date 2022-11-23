@@ -14,7 +14,7 @@ example: `DJANGO_SETTINGS_MODULE=soup.settings.dev`
 
 ## For integrators
 Use the docker image available on ghcr.io
-
+You can follow [this example](https://github.com/NicolasBoulard/soup/Documentation/) of integration.
 
 ### Parameters
 
