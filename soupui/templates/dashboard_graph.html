@@ -5,7 +5,7 @@
     <div class="container text-center">
         <div class="row justify-content-center">
             {% for service in services %}
-            <div class="col-6">
+            <div class="col-6 p-1">
                 {% if not service.transaction_set.all %}
                 <div style="min-height: 55vh" class="text-bg-light h-100 d-flex align-items-center justify-content-center">
 
@@ -16,7 +16,7 @@
                 <div id="chart-{{ service.id }}">
                 </div>
                 <div>
-                    <a href="{% url 'dashboard_service' device_id service.id %}"><button class="btn btn-sm btn-primary"> Voir les logs associés</button></a>
+                    <a href="{% url 'dashboard_service' service.device.id service.id %}"><button class="btn btn-sm btn-primary"> Voir les logs associés</button></a>
                 </div>
                 {% endif %}
             </div>

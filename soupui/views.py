@@ -66,8 +66,12 @@ def dashboard_service(request, device_id, service_id):
 
 
 def dashboard(request):
-    template = loader.get_template("dashboard.html")
-    context = {"title": "Dashboard", "devices": Device.objects.all()}
+    template = loader.get_template("dashboard_graph.html")
+    context = {
+        "title": "Dashboard",
+        "devices": Device.objects.all(),
+        "services": Service.objects.all(),
+    }
     log_notif = logNotificationNumber()
     context["log_notif"] = log_notif
     if request.user.is_authenticated:
@@ -334,7 +338,7 @@ def log(request, view_all):
     if request.user.is_authenticated:
         transaction_signature_list = []
         transaction_list = []
-        for transaction in Transaction.objects.all().order_by("-date")[:200][::-1]:
+        for transaction in Transaction.objects.all().order_by("-date"):
             # TODO fix if no threshold not defined, not transaction showed
             for threshold in transaction.service.threshold.all():
                 criticality = threshold.get_criticality_code(transaction)
@@ -346,7 +350,10 @@ def log(request, view_all):
                         f"{transaction.id}#{transaction.service.id}#{criticality.code}"
                     )
 
-                    if transaction_signature not in transaction_signature_list:
+                    if (
+                        transaction_signature not in transaction_signature_list
+                        and len(transaction_list) <= 200
+                    ):
                         transaction_signature_list.append(transaction_signature)
                         transaction_list.append(
                             {
