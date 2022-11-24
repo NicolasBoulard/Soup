@@ -24,7 +24,6 @@
               <th scope="col">#</th>
               <th scope="col">Nom</th>
               <th scope="col">OID</th>
-              <th scope="col">OID(Traduction en language)</th>
             </tr>
           </thead>
 
@@ -39,7 +38,6 @@
                   </th>
                   <td>{{ oid.name }}</td>
                   <td>{{ oid.identifier }}</td>
-                  <td>traduction de l'oid</td>
                   <td><span type="text" data-bs-toggle="modal" data-bs-target="#edit-item-{{ oid.id }}" class="btn-edit d-none btn btn-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;"><i class="fa-solid fa-pen"></i> Modifier</span></td>
                 </tr>
                 {% endfor %}
@@ -97,10 +95,6 @@
             <div class="input-group mb-3">
               <span class="input-group-text" id="add-identifier"><i class="fa-solid fa-book"></i></span>
               <input value="{{ oid.identifier }}" name="identifier" type="text" class="form-control" placeholder="Identifier (1.2.3.4.5.6)" aria-label="Adresse IP" aria-describedby="add-identifier" required>
-            </div>
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="add-port"><i class="fa-solid fa-language"></i></span>
-              <input value="" name="identifiertrad" type="text" class="form-control" placeholder="Identifier trad" aria-label="Port" aria-describedby="add-port" disabled>
             </div>
           </div>
           <div class="modal-footer">
