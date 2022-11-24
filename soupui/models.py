@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 
+
 class OID(models.Model):
     name = models.CharField(max_length=255)
     identifier = models.CharField(max_length=255)
@@ -35,6 +36,7 @@ class Criticality(models.Model):
     def __str__(self):
         return f"{self.name} - {self.index}"
 
+
 class Threshold(models.Model):
     class Function(models.TextChoices):
         MIN = "MIN", _("Minimum")
@@ -61,6 +63,7 @@ class Threshold(models.Model):
                 return self.criticality
         return None
 
+
 class Service(models.Model):
     name = models.CharField(max_length=255, default="")
     oid = models.ForeignKey(OID, on_delete=models.CASCADE)
@@ -77,5 +80,3 @@ class Transaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     value = models.CharField(max_length=255)
     viewed = models.BooleanField(default=False)
-
-
